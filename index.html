@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>flatmark</title>
+  </head>
+<body>
+  <h1>flatmark</h1>
+
+  <input id="markinput" type="text" />
+
+  <p id="marks"></p>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $.ajax({
+          type: "GET",
+          url: "flatmark.php?action=init",
+          success: function(data) {
+            $('#marks').append(data);
+        }
+      });
+    });
+
+    $( "#markinput" ).keypress(function( event ) {
+      if ( event.which == 13 ) {
+        event.preventDefault();
+      }
+      if (event.key == 'Enter') {
+        var bookmark_to_save = {};
+        bookmark_to_save['text'] = $("#markinput").val();
+        // ajax call
+        $.ajax({
+            type: "POST",
+            url: "flatmark.php?action=addmark",
+            data: bookmark_to_save,
+            success: function(html){ // this happen after we get result
+              alert('Bookmark erfolgreich gespeichert!');
+              $('#marks').append(bookmark_to_save['text']);
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
