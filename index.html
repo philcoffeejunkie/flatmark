@@ -18,35 +18,132 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
   <script>
-    $(document).ready(function() {
+  function deleteBookmark(bookmarkID) {
+    $.ajax({
+      type: "GET",
+      url: "flatmark.php?action=del&id=" + bookmarkID,
+      success: function(data) {
+        alert('del ' + bookmarkID);
+      }
+    });
+  }
+
+  function containsDescription(bookmarkString) {
+    if ((bookmarkString.indexOf('(') != -1) && (bookmarkString.indexOf(')') != -1)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  function containsTags(bookmarkString) {
+    if (bookmarkString.indexOf('#') != -1) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  function getBookmarkLink(bookmarkString) {
+    spacePosition = bookmarkString.indexOf(' ');
+    if (spacePosition != -1) {
+      return bookmarkString.substring(0, spacePosition);
+    }
+    else {
+      return bookmarkString;
+    }
+  }
+
+  function getBookmarkDescription(bookmarkString) {
+    var startPos = 0;
+    var endPos = 0;
+    startPos = bookmarkString.indexOf('(') + 1;
+    endPos = bookmarkString.indexOf(')') - 1;
+    return bookmarkString.substring(startPos, endPos);
+  }
+
+  function getBookmarkTags(bookmarkString) {
+    var allTags = [];
+    var startPos = 0;
+    startPos = bookmarkString.indexOf('#');
+    allTags = bookmarkString.substring(startPos, bookmarkString.length);
+    return allTags.split(' ');
+  }
+
+  function handleBookmarkString(bookmarkString, bookmarkID) {
+    var bookmarkLink = '';
+    var bookmarkDescription = '';
+    var bookmarkHTML = '';
+
+    bookmarkLink = getBookmarkLink(bookmarkString);
+    bookmarkHTML = '<a href="#" onClick="deleteBookmark(' + bookmarkID + ');">del</a> ';
+    bookmarkHTML = bookmarkHTML + '<a href="' + bookmarkLink + '">' + bookmarkLink + '</a>';
+
+    if (containsDescription(bookmarkString)) {
+      bookmarkDescription = getBookmarkDescription(bookmarkLink);
+      bookmarkHTML = bookmarkHTML + bookmarkDescription;
+    }
+
+    if (containsTags(bookmarkString)) {
+      tagArray = getBookmarkTags(bookmarkString);
+      for (var tag of tagArray) {
+        bookmarkHTML = bookmarkHTML + ' ' + tag;
+      }
+    }
+
+    // append bookmarkHTML to DOM
+    $('#marks').append(bookmarkHTML + '<br>');
+  }
+
+  function handleBookmarkList(bookmarkList) {
+    var bookmarkStringList = [];
+    var bookmarkID = 0;
+
+    bookmarkStringList = bookmarkList.trim().split('\n');
+
+    for (var bookmarkString of bookmarkStringList) {
+      handleBookmarkString(bookmarkString, bookmarkID);
+      bookmarkID++;
+    }
+  }
+
+
+  // ****** MAIN PROGRAM ****** //
+  $(document).ready(function() {
+    $.ajax({
+        type: "GET",
+        url: "flatmark.php?action=init",
+        success: function(data) {
+          handleBookmarkList(data);
+        }
+    });
+  });
+
+  // ****** HANDLE INPUT ****** //
+
+  $("#markinput").keypress(function(event) {
+    if (event.which == 1) {
+      event.preventDefault();
+    }
+
+    if (event.key == 'Enter') {
+      var bookmark_to_save = {};
+      bookmark_to_save['text'] = $("#markinput").val();
+
+      // ajax call
       $.ajax({
-          type: "GET",
-          url: "flatmark.php?action=init",
-          success: function(data) {
-            $('#marks').append(data);
+        type: "POST",
+        url: "flatmark.php?action=addmark",
+        data: bookmark_to_save,
+        success: function(html) {
+          alert('Bookmark erfolgreich gespeichert!'); // TODO: better modal
+          handleBookmarkString(bookmark_to_save['text'], 0);
         }
       });
-    });
-
-    $( "#markinput" ).keypress(function( event ) {
-      if ( event.which == 13 ) {
-        event.preventDefault();
-      }
-      if (event.key == 'Enter') {
-        var bookmark_to_save = {};
-        bookmark_to_save['text'] = $("#markinput").val();
-        // ajax call
-        $.ajax({
-            type: "POST",
-            url: "flatmark.php?action=addmark",
-            data: bookmark_to_save,
-            success: function(html){ // this happen after we get result
-              alert('Bookmark erfolgreich gespeichert!');
-              $('#marks').append(bookmark_to_save['text']);
-          }
-        });
-      }
-    });
+    }
+  });
   </script>
 
 </body>
