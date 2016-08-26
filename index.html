@@ -87,8 +87,14 @@
     }
 
     if (containsTags(bookmarkString)) {
+      var index;
       tagArray = getBookmarkTags(bookmarkString);
+      /* not supported in IE11:
       for (var tag of tagArray) {
+        bookmarkHTML = bookmarkHTML + ' ' + tag;
+      }
+      */
+      for (index = tagArray.length -1; index >= 0; --index) {
         bookmarkHTML = bookmarkHTML + ' ' + tag;
       }
     }
