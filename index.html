@@ -76,6 +76,7 @@
     var bookmarkLink = '';
     var bookmarkDescription = '';
     var bookmarkHTML = '';
+    var index;
 
     bookmarkLink = getBookmarkLink(bookmarkString);
     bookmarkHTML = '<a href="#" onClick="deleteBookmark(' + bookmarkID + ');">del</a> ';
@@ -87,15 +88,14 @@
     }
 
     if (containsTags(bookmarkString)) {
-      var index;
       tagArray = getBookmarkTags(bookmarkString);
       /* not supported in IE11:
       for (var tag of tagArray) {
         bookmarkHTML = bookmarkHTML + ' ' + tag;
       }
       */
-      for (index = tagArray.length -1; index >= 0; --index) {
-        bookmarkHTML = bookmarkHTML + ' ' + tag;
+      for (index = 0; index < tagArray.length; ++index) {
+        bookmarkHTML = bookmarkHTML + ' ' + tagArray[index];
       }
     }
 
