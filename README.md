@@ -2,7 +2,7 @@
 
 A lightweight, super-simple, flatfile-based bookmark app
 
-## Format specification
+## Format Specification
 
 The core of **flatmark** is a plaintext file containing all bookmarks. The format
 is inspired by successful and simple formats like todo.txt — there are only
@@ -14,7 +14,19 @@ three rules:
 
 A simple example would look like this:
 
-    https://www.github.com (Optional description) #some #optional #tags
+```
+https://www.github.com (Optional description) #some #optional #tags
+```
+
+I want to encourage everybody to write your own app for whatever platform
+to handle flatmark bookmarks!
+
+## Planned Features (TODO)
+
+- [x] Deleting bookmarks
+- [ ] Export/Import functionality for the whole bookmark-file
+- [ ] Editing bookmarks
+- [ ] Add some CSS to make the webapp look nice
 
 ## License
 
