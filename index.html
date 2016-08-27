@@ -89,11 +89,6 @@
 
     if (containsTags(bookmarkString)) {
       tagArray = getBookmarkTags(bookmarkString);
-      /* not supported in IE11:
-      for (var tag of tagArray) {
-        bookmarkHTML = bookmarkHTML + ' ' + tag;
-      }
-      */
       for (index = 0; index < tagArray.length; ++index) {
         bookmarkHTML = bookmarkHTML + ' ' + tagArray[index];
       }
@@ -109,8 +104,8 @@
 
     bookmarkStringList = bookmarkList.trim().split('\n');
 
-    for (var bookmarkString of bookmarkStringList) {
-      handleBookmarkString(bookmarkString, bookmarkID);
+    for (index = 0; index < bookmarkStringList.lenght; ++index) {
+      handleBookmarkString(bookmarkStringList[index], bookmarkID);
       bookmarkID++;
     }
   }
