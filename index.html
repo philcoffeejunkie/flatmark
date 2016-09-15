@@ -5,14 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <link rel="stylesheet" href="css/spectre.min.css" />
+
     <title>flatmark</title>
   </head>
 <body>
-  <h1>flatmark</h1>
-
-  <input id="markinput" type="text" />
-
-  <p id="marks"></p>
+  <div class="container grid-960">
+    <div class="columns">
+      <div class="column col-12">
+        <h1>flatmark</h1>
+        <div class="input-group">
+          <input class="form-input" id="markinput" type="text" />
+          <button class="btn btn-primary input-group-btn">Submit</button>
+        </div>
+        <p id="marks"></p>
+      </div>
+    </div>
+  </div>
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
