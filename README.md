@@ -5,12 +5,12 @@ A lightweight, super-simple, flatfile-based bookmark app
 ## Format Specification
 
 The core of **flatmark** is a plaintext file containing all bookmarks. The format
-is inspired by successful and simple formats like todo.txt — there are only
-three rules:
+is inspired by successful and simple formats like todo.txt — a bookmark is one
+line in the file consisting of three parts:
 
-- a bookmark is one line in the file, beginning with the link itself
-- after the link follows a whitespace and an optional description in brackets
-- after the description there are tags indicated by the hash-sign
+- the link itself, starting with the protocol string (mandatory)
+- a description in parentheses (optional)
+- tags for later filtering, indicated by the hash-sign (optional)
 
 A simple example would look like this:
 

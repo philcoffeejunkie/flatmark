@@ -101,10 +101,11 @@
   function handleBookmarkList(bookmarkList) {
     var bookmarkStringList = [];
     var bookmarkID = 0;
+    var index;
 
     bookmarkStringList = bookmarkList.trim().split('\n');
 
-    for (index = 0; index < bookmarkStringList.lenght; ++index) {
+    for (index = 0; index < bookmarkStringList.length; ++index) {
       handleBookmarkString(bookmarkStringList[index], bookmarkID);
       bookmarkID++;
     }
