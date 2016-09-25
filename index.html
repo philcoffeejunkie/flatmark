@@ -36,6 +36,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
   <script>
+  var bookmarkID;
+
   function deleteBookmark(bookmarkID) {
     $.ajax({
       type: "GET",
@@ -119,8 +121,9 @@
 
   function handleBookmarkList(bookmarkList) {
     var bookmarkStringList = [];
-    var bookmarkID = 0;
     var index;
+
+    bookmarkID = 0;
 
     bookmarkStringList = bookmarkList.trim().split('\n');
 
@@ -169,7 +172,7 @@
           success: function(html) {
             alert('Bookmark erfolgreich gespeichert!'); // TODO: better modal
             $("#markinput").val('');
-            handleBookmarkString(bookmark_to_save['text'], 0);
+            handleBookmarkString(bookmark_to_save['text'], bookmarkID++);
           }
         });
       }
