@@ -8,18 +8,26 @@
 
     <link rel="stylesheet" href="css/spectre.min.css" />
 
+    <style type="text/css">
+      .filterinvisible {
+        visibility: hidden;
+      }
+    </style>
+
     <title>flatmark</title>
   </head>
 <body>
   <div class="container grid-960">
     <div class="columns">
       <div class="column col-12">
-        <h1>flatmark</h1>
+        <h1>flatmark <small>v0.1.0</small></h1>
+        <p>by <a href="https://philcoffeejunkie.github.io" target="_blank" rel="noopener">philcoffeejunkie</a></p>
         <div class="input-group">
           <input class="form-input" id="markinput" type="text" />
           <button class="btn btn-primary input-group-btn">Submit</button>
         </div>
         <p id="marks"></p>
+        <p><a href="#" onclick="resetFilter()">Reset Filter</a></p>
       </div>
     </div>
   </div>
@@ -34,6 +42,7 @@
       url: "flatmark.php?action=del&id=" + bookmarkID,
       success: function(data) {
         alert('del ' + bookmarkID);
+        $("span").remove("#" + bookmarkID);
       }
     });
   }
@@ -89,8 +98,8 @@
     var index;
 
     bookmarkLink = getBookmarkLink(bookmarkString);
-    bookmarkHTML = '<a href="#" onClick="deleteBookmark(' + bookmarkID + ');">del</a> ';
-    bookmarkHTML = bookmarkHTML + '<a href="' + bookmarkLink + '">' + bookmarkLink + '</a>';
+    bookmarkHTML = '<span id="'+ bookmarkID + '"><a href="#" onClick="deleteBookmark(' + bookmarkID + ');">del</a> ';
+    bookmarkHTML = bookmarkHTML + '<a href="' + bookmarkLink + '" target="_blank" rel="noopener">' + bookmarkLink + '</a>';
 
     if (containsDescription(bookmarkString)) {
       bookmarkDescription = getBookmarkDescription(bookmarkLink);
@@ -105,7 +114,7 @@
     }
 
     // append bookmarkHTML to DOM
-    $('#marks').append(bookmarkHTML + '<br>');
+    $('#marks').append(bookmarkHTML + '</span><br>');
   }
 
   function handleBookmarkList(bookmarkList) {
@@ -119,6 +128,12 @@
       handleBookmarkString(bookmarkStringList[index], bookmarkID);
       bookmarkID++;
     }
+  }
+
+  function resetFilter() {
+    $(".filterinvisible").each(function() {
+      $(this).removeClass("filterinvisible");
+    });
   }
 
 
@@ -144,16 +159,38 @@
       var bookmark_to_save = {};
       bookmark_to_save['text'] = $("#markinput").val();
 
-      // ajax call
-      $.ajax({
-        type: "POST",
-        url: "flatmark.php?action=addmark",
-        data: bookmark_to_save,
-        success: function(html) {
-          alert('Bookmark erfolgreich gespeichert!'); // TODO: better modal
-          handleBookmarkString(bookmark_to_save['text'], 0);
-        }
-      });
+      // filter or add?
+      if (bookmark_to_save['text'].startsWith("http")) {
+        // ajax call
+        $.ajax({
+          type: "POST",
+          url: "flatmark.php?action=addmark",
+          data: bookmark_to_save,
+          success: function(html) {
+            alert('Bookmark erfolgreich gespeichert!'); // TODO: better modal
+            $("#markinput").val('');
+            handleBookmarkString(bookmark_to_save['text'], 0);
+          }
+        });
+      }
+      else {
+        // alert("filter!");
+        $("span").each(function() {
+          //Or: $.each( $("p"), function() {
+
+          var tags = getBookmarkTags(bookmark_to_save['text']);
+          var index;
+          console.log(tags);
+
+          for (index = 0; index < tags.length; ++index) {
+            if ($(this).html().indexOf(tags[index]) == -1) {
+              console.log(tags[index]);
+              console.log($(this).html());
+              $(this).addClass("filterinvisible");
+            }
+          }
+        });
+      }
     }
   });
   </script>
