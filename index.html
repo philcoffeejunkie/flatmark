@@ -116,7 +116,7 @@
     }
 
     // append bookmarkHTML to DOM
-    $('#marks').append(bookmarkHTML + '</span><br>');
+    $('#marks').append(bookmarkHTML + '<br></span>');
   }
 
   function handleBookmarkList(bookmarkList) {
@@ -163,7 +163,7 @@
       bookmark_to_save['text'] = $("#markinput").val();
 
       // filter or add?
-      if (bookmark_to_save['text'].startsWith("http")) {
+      if (bookmark_to_save['text'].indexOf("http") == 0) {
         // ajax call
         $.ajax({
           type: "POST",
@@ -177,7 +177,6 @@
         });
       }
       else {
-        // alert("filter!");
         $("span").each(function() {
           //Or: $.each( $("p"), function() {
 
