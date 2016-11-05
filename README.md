@@ -24,9 +24,10 @@ to handle flatmark bookmarks!
 ## Planned Features (TODO)
 
 - [x] Deleting bookmarks
+- [x] Add some CSS to make the webapp look nice
 - [ ] Export/Import functionality for the whole bookmark-file
-- [ ] Editing bookmarks
-- [ ] Add some CSS to make the webapp look nice
+- [ ] Edit bookmarks
+- [ ] Provide authentication
 
 ## License
 
