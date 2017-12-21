@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>flatmark frontend vue</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- <link rel="stylesheet" href="css/spectre.css" /> -->
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <script src="js/vue.js"></script>
+  </head>
+  <body>
+
+
+    <div class="container grid-lg">
+      <div class="columns">
+        <div class="column col-12">
+          <h1 name="flatmarkheader">flatmark <small>v0.2.0</small></h1>
+          <p>by <a href="https://philcoffeejunkie.de" target="_blank" rel="noopener">philcoffeejunkie</a></p>
+          <div id="flatmark">
+            <div class="input-group">
+              <input class="form-input" id="markinput" type="text" v-on:keyup.enter="submit" v-model="markinput" />
+              <button class="btn btn-primary input-group-btn" v-on:click="submit">Submit</button>
+            </div>
+            <ul>
+              <li v-for="(bookmark,index) in bookmarks">
+                <a href="#" v-on:click="deleteBookmark(index)">del</a>
+                <a href="#edit-modal" v-on:click="editBookmark(index)">edit</a>
+                {{ bookmark.url }}
+                <span v-if="bookmark.description != null">({{ bookmark.description }})</span>
+                <span v-if="bookmark.tags.length != 0" v-for="tag in bookmark.tags">{{ tag }} </span>
+              </li>
+            </ul>
+
+            <!-- edit bookmark modal -->
+            <div class="modal" id="edit-modal">
+              <a href="#flatmarkheader" class="modal-overlay" v-on:click="cancelEditModal" aria-label="Close"></a>
+              <div class="modal-container">
+                <div class="modal-header">
+                  <a href="#flatmarkheader" class="btn btn-clear float-right" v-on:click="cancelEditModal" aria-label="Close"></a>
+                  <div class="modal-title h5">Edit Bookmark</div>
+                </div>
+                <div class="modal-body">
+                  <div class="content">
+                    <form>
+                      <div class="form-group">
+                        <label class="form-label" for="edit-input">Bookmark</label>
+                        <input class="form-input" type="text" id="edit-input" v-model="editinput" placeholder="Name">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-primary">Submit</button>
+                  <a href="#flatmarkheader" class="btn btn-link" v-on:click="cancelEditModal" aria-label="Close">Cancel</a>
+                </div>
+              </div>
+            </div>
+
+          </div> <!-- ./flatmark -->
+        </div> <!-- ./column col-12 -->
+      </div> <!-- ./columns -->
+    </div> <!-- ./container grid-960 -->
+
+    <script>
+      var apiURL = 'http://127.0.0.3:8081/bookmarks'
+
+      var app = new Vue({
+      el: '#flatmark',
+      data: {
+        bookmarks: null,
+        // bookmarks: [{"url":"http://zeit.de","tags":["#news"]},{"url":"http://blackevil.net","description":"Heavy Forces","tags":["#metal","#cult"]}],
+        markinput: null,
+        editinput: null
+      },
+
+      created: function () {
+        this.fetchData()
+      },
+
+      computed: {
+        bookmarkDescription: function(bookmarkString) {
+          if ((this.markinput.indexOf('(') != -1) && (this.markinput.indexOf(')') != -1)) {
+            var startPos = 0;
+            var endPos = 0;
+            startPos = this.markinput.indexOf('(') + 1;
+            endPos = this.markinput.indexOf(')');
+            return this.markinput.substring(startPos, endPos);
+          }
+        },
+
+        bookmarkTags: function() {
+          if (this.markinput.indexOf('#') != -1) {
+            startPos = this.markinput.indexOf('#');
+            var allTags = this.markinput.substring(startPos, this.markinput.length);
+            return allTags.split(' ');
+          }
+          else {
+            return [];
+          }
+        },
+
+        bookmarkLink: function() {
+          spacePosition = this.markinput.indexOf(' ');
+          if (spacePosition != -1) {
+            return this.markinput.substring(0, spacePosition);
+          }
+          else {
+            return this.markinput;
+          }
+        }
+      },
+
+      methods: {
+        fetchData: function () {
+          var xhr = new XMLHttpRequest()
+          var self = this
+          xhr.open('GET', apiURL)
+          xhr.onload = function () {
+            self.bookmarks = JSON.parse(xhr.responseText)
+            // console.log(self.bookmarks[0].html_url)
+          }
+          xhr.send()
+        },
+        submit: function() {
+          // alert(this.markinput + 'added successfully!')
+          var request = new XMLHttpRequest();
+          request.open('POST', apiURL, true);
+          request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+          request.send('bookmarkString=' + this.markinput);
+          this.bookmarks.push({
+            url: this.bookmarkLink,
+            description: this.bookmarkDescription,
+            tags: this.bookmarkTags
+          })
+          this.markinput = ''
+        },
+        editBookmark: function(id) {
+          var bookmark = this.bookmarks[id];
+          this.editinput = bookmark.url + " (" + bookmark.description + ") " + bookmark.tags.join(" ");
+          var editmodal = document.getElementById('edit-modal');
+          editmodal.className += " active";
+        },
+        deleteBookmark: function(id) {
+          alert('delete ' + id)
+          var request = new XMLHttpRequest();
+          request.open('DELETE', apiURL + '/' + id, true);
+          request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+          request.send();
+          this.bookmarks.splice(id, 1)
+        },
+        cancelEditModal: function() {
+          var editmodal = document.getElementById('edit-modal');
+          editmodal.classList.remove("active");
+        }
+      }
+    })
+    </script>
+  </body>
+</html>
