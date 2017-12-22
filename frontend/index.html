@@ -55,7 +55,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-primary">Submit</button>
+                  <a href="#flatmarkheader" class="btn btn-primary" v-on:click="saveEditedBookmark">Submit</a>
                   <a href="#flatmarkheader" class="btn btn-link" v-on:click="cancelEditModal" aria-label="Close">Cancel</a>
                 </div>
               </div>
@@ -73,9 +73,10 @@
       el: '#flatmark',
       data: {
         bookmarks: null,
-        // bookmarks: [{"url":"http://zeit.de","tags":["#news"]},{"url":"http://blackevil.net","description":"Heavy Forces","tags":["#metal","#cult"]}],
         markinput: null,
-        editinput: null
+        editinput: null,
+        currentID: 0,
+        currentBookmarkString: null
       },
 
       created: function () {
@@ -143,6 +144,7 @@
           var bookmark = this.bookmarks[id];
           this.editinput = bookmark.url + " (" + bookmark.description + ") " + bookmark.tags.join(" ");
           var editmodal = document.getElementById('edit-modal');
+          this.currentID = id;
           editmodal.className += " active";
         },
         deleteBookmark: function(id) {
@@ -156,6 +158,16 @@
         cancelEditModal: function() {
           var editmodal = document.getElementById('edit-modal');
           editmodal.classList.remove("active");
+        },
+        saveEditedBookmark: function() {
+          var editmodal = document.getElementById('edit-modal');
+          console.log(editmodal);
+          editmodal.classList.remove("active");
+          var request = new XMLHttpRequest();
+          request.open('PUT', apiURL + '/' + this.currentID, true);
+          request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+          request.send('bookmarkString=' + this.editinput);
+          // change bookmark on frontend TODO
         }
       }
     })
