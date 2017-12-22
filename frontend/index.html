@@ -85,19 +85,19 @@
 
       computed: {
         bookmarkDescription: function(bookmarkString) {
-          if ((this.markinput.indexOf('(') != -1) && (this.markinput.indexOf(')') != -1)) {
+          if ((this.currentBookmarkString.indexOf('(') != -1) && (this.currentBookmarkString.indexOf(')') != -1)) {
             var startPos = 0;
             var endPos = 0;
-            startPos = this.markinput.indexOf('(') + 1;
-            endPos = this.markinput.indexOf(')');
-            return this.markinput.substring(startPos, endPos);
+            startPos = this.currentBookmarkString.indexOf('(') + 1;
+            endPos = this.currentBookmarkString.indexOf(')');
+            return this.currentBookmarkString.substring(startPos, endPos);
           }
         },
 
         bookmarkTags: function() {
-          if (this.markinput.indexOf('#') != -1) {
-            startPos = this.markinput.indexOf('#');
-            var allTags = this.markinput.substring(startPos, this.markinput.length);
+          if (this.currentBookmarkString.indexOf('#') != -1) {
+            startPos = this.currentBookmarkString.indexOf('#');
+            var allTags = this.currentBookmarkString.substring(startPos, this.currentBookmarkString.length);
             return allTags.split(' ');
           }
           else {
@@ -106,12 +106,12 @@
         },
 
         bookmarkLink: function() {
-          spacePosition = this.markinput.indexOf(' ');
+          spacePosition = this.currentBookmarkString.indexOf(' ');
           if (spacePosition != -1) {
-            return this.markinput.substring(0, spacePosition);
+            return this.currentBookmarkString.substring(0, spacePosition);
           }
           else {
-            return this.markinput;
+            return this.currentBookmarkString;
           }
         }
       },
@@ -133,6 +133,7 @@
           request.open('POST', apiURL, true);
           request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
           request.send('bookmarkString=' + this.markinput);
+          this.currentBookmarkString = this.markinput;
           this.bookmarks.push({
             url: this.bookmarkLink,
             description: this.bookmarkDescription,
@@ -161,13 +162,15 @@
         },
         saveEditedBookmark: function() {
           var editmodal = document.getElementById('edit-modal');
-          console.log(editmodal);
+          this.currentBookmarkString = this.editinput;
           editmodal.classList.remove("active");
           var request = new XMLHttpRequest();
           request.open('PUT', apiURL + '/' + this.currentID, true);
           request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
           request.send('bookmarkString=' + this.editinput);
-          // change bookmark on frontend TODO
+          this.bookmarks[this.currentID].url = this.bookmarkLink
+          this.bookmarks[this.currentID].description = this.bookmarkDescription
+          this.bookmarks[this.currentID].tags = this.bookmarkTags
         }
       }
     })
