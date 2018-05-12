@@ -89,6 +89,13 @@ passport.use(new LocalStrategy(
   }
 ));
 
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
 
 // ----- MAIN PROGRAM -----
 
@@ -106,6 +113,26 @@ var router = express.Router();
     // res.json({ message: 'welcome to flatmark 0.1.0' });
     //res.sendFile('./frontend/index.html')
 // })
+
+router.route('/login')
+     .post(passport.authenticate('local'), function(req, res) {
+          res.redirect('/');
+     });
+
+router.route('/logout')
+    .get(function(req, res) {
+         req.logout();
+         res.redirect('/');
+    });
+
+router.route('/user')
+    .get(function(req, res) {
+         if (req.user) {
+             res.json("logged in!\n")
+         } else {
+             res.json("not logged in\n")
+         }
+    })
 
 router.route('/bookmarks')
 
@@ -159,9 +186,12 @@ router.route('/bookmarks/:bookmark_id')
     });
     })
 
-app.use('/', router);
+
 app.use(express.static('frontend'));
+app.use(require('cookie-parser')());
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/', router);
 
 app.listen(3000, () => console.log('flatmark app listening on port 3000!'))
