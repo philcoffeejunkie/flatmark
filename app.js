@@ -1,6 +1,12 @@
 const express    = require('express');
 const bodyParser = require('body-parser');
 const fs         = require('fs');
+const passport   = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+const users = {
+   'phil' : 'pass'
+};
 
 // ----- FUNCTIONS -------
 
@@ -73,6 +79,17 @@ function readBookmarks(res) {
     });
 }
 
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    if (!users[username] || users[username] != password) {
+      return done(null, false);
+    }
+
+    return done(null, { username : username });
+  }
+));
+
+
 // ----- MAIN PROGRAM -----
 
 const app = express();
@@ -144,4 +161,7 @@ router.route('/bookmarks/:bookmark_id')
 
 app.use('/', router);
 app.use(express.static('frontend'));
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.listen(3000, () => console.log('flatmark app listening on port 3000!'))
