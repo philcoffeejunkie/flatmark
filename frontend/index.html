@@ -124,7 +124,11 @@
           var self = this
           xhr.open('GET', apiURL)
           xhr.onload = function () {
-            self.bookmarks = JSON.parse(xhr.responseText)
+            if (xhr.status == 200) {
+              self.bookmarks = JSON.parse(xhr.responseText)
+            } else if (xhr.status == 401) {
+              alert('Please log in')
+            }
             // console.log(self.bookmarks[0].html_url)
           }
           xhr.send()

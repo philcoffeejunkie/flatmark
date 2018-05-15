@@ -97,6 +97,14 @@ passport.deserializeUser(function(user, done) {
   done(null, user);
 });
 
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+       return next();
+    } else {
+       return res.send(401);
+    }
+}
+
 // ----- MAIN PROGRAM -----
 
 const app = express();
@@ -134,6 +142,11 @@ router.route('/user')
          }
     })
 
+router.route('/test')
+    .get(ensureAuthenticated, function(req, res) {
+        res.json("Hello world! :)")
+    })
+
 router.route('/bookmarks')
 
     // create bookmark
@@ -146,7 +159,7 @@ router.route('/bookmarks')
     })
 
     // get all the bookmarks
-    .get(function(req, res) {
+    .get(ensureAuthenticated, function(req, res) {
         readBookmarks(res);
     })
 
