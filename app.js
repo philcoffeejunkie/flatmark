@@ -201,6 +201,7 @@ router.route('/bookmarks/:bookmark_id')
 
 
 app.use(express.static('frontend'));
+app.use('/js/vue', express.static('node_modules/vue/dist'));
 app.use(require('cookie-parser')());
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
