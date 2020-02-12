@@ -150,7 +150,7 @@ router.route('/test')
 router.route('/bookmarks')
 
     // create bookmark
-    .post(function(req, res) {
+    .post(ensureAuthenticated, function(req, res) {
         var bookmarkString = req.body.bookmarkString + '\n';
         fs.appendFile('marks.txt', bookmarkString, 'utf8', function (err) {
             if (err) return console.log(err);

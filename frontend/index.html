@@ -32,7 +32,7 @@
               <li v-for="(bookmark,index) in bookmarks">
                 <a href="#" v-on:click="deleteBookmark(index)">del</a>
                 <a href="#edit-modal" v-on:click="editBookmark(index)">edit</a>
-                {{ bookmark.url }}
+                <a :href="bookmark.url" target="_blank">{{ bookmark.url }}</a>
                 <span v-if="bookmark.description != null">({{ bookmark.description }})</span>
                 <span v-if="bookmark.tags.length != 0" v-for="tag in bookmark.tags">{{ tag }} </span>
               </li>
@@ -149,7 +149,11 @@
         },
         editBookmark: function(id) {
           var bookmark = this.bookmarks[id];
-          this.editinput = bookmark.url + " (" + bookmark.description + ") " + bookmark.tags.join(" ");
+          this.editinput = bookmark.url;
+          if (typeof bookmark.description !== 'undefined') {
+            this.editinput += " (" + bookmark.description + ")";
+          }
+          this.editinput += " " + bookmark.tags.join(" ");
           var editmodal = document.getElementById('edit-modal');
           this.currentID = id;
           editmodal.className += " active";
